@@ -1,0 +1,23 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Scripts/TerrainGeneration.gd" type="Script" id=1]
+[ext_resource path="res://Assets/World/Grass.vox.obj" type="ArrayMesh" id=2]
+[ext_resource path="res://Assets/Freelook_Camera/Freelook_cam.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Assets/World/Grass.vox.png" type="Texture" id=4]
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_texture = ExtResource( 4 )
+
+[sub_resource type="MultiMesh" id=1]
+transform_format = 1
+mesh = ExtResource( 2 )
+
+[node name="Spatial" type="Spatial"]
+
+[node name="Spatial" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -28.0483, -29.285, -15.3539 )
+
+[node name="TerrainGeneration" type="MultiMeshInstance" parent="."]
+material_override = SubResource( 2 )
+multimesh = SubResource( 1 )
+script = ExtResource( 1 )
