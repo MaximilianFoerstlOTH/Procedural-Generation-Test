@@ -13,12 +13,12 @@ func _ready():  # Runs when scene is initialized
 		for _y in range(0,worldsize):
 			blocks[x].append(null)
 			
-	mesh_count = worldsize * worldsize 
+	mesh_count = worldsize * worldsize +1000
 	
 	self.multimesh.instance_count = mesh_count
-	
 	generateWorld()
-	#fillHoles()
+	
+	fillHoles()
 	
 	
 #TODO LÖSCHEN WENN NICHT MEHR BENÖTIGT 
@@ -42,7 +42,7 @@ func setBlock(gridX, gridY, gridZ):
 #	orig.origin = Vector3(gridX*gridsize,gridY*gridsize,gridZ*gridsize)
 #	block_instance.transform = orig
 #	add_child(block_instance)
-	self.multimesh.set_instance_transform(instanceId, Transform(Basis(), Vector3(gridX, gridY, gridZ)))
+	self.multimesh.set_instance_transform(instanceId, Transform(Basis(), Vector3(gridX*2, gridY*2, gridZ*2)))
 	instanceId = instanceId + 1
 	
 
@@ -92,4 +92,5 @@ func generateWorld():
 			var y = noise.get_noise_2d(x,z)+1
 			y = floor(y*50)
 			setBlock_and_add_to_array(x,y,z)
+			
 			
