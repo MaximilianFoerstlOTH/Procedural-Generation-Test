@@ -66,7 +66,7 @@ func _input(event):
 func _process(delta):
 	_update_mouselook()
 	_update_movement(delta)
-	print(Performance.get_monitor(Performance.TIME_FPS))
+	#print(Performance.get_monitor(Performance.TIME_FPS))
 
 # Updates camera movement
 func _update_movement(delta):

@@ -1,35 +1,33 @@
 extends MultiMeshInstance
+
+
+
 var prev = 0
 var instanceId := 0
 var gridsize = 2
-var block = preload("res://Assets/World/Block.tscn")
 var worldsize = 300
 var mesh_count := 0
 var blocks = []
+var sBodys = []
+
+
 func _ready():  # Runs when scene is initialized
+	initArrays()		
+	mesh_count = worldsize * worldsize 
+	self.multimesh.instance_count = mesh_count
+	generateWorld()
+	#fillHoles()
+	
+	
+func initArrays():
 	for x in range(0,worldsize):
-		var _arr = []
 		blocks.append([])
 		for _y in range(0,worldsize):
 			blocks[x].append(null)
-			
-	mesh_count = worldsize * worldsize +1000
-	
-	self.multimesh.instance_count = mesh_count
-	generateWorld()
-	
-	fillHoles()
-	
-	
-#TODO LÖSCHEN WENN NICHT MEHR BENÖTIGT 
-func createChunk(chunkX, chunkY):
-	var y = 0
-	for x in range(0+chunkX*16,16+chunkX*16,1):
-		var h = y
-		for z in range(0+chunkY*16,16+chunkY*16,1):
-			setBlock_and_add_to_array(x,y,z)
-			y = y +1
-		y = h +1
+	for x in range(0, worldsize):
+		sBodys.append([])
+		for _y in range(0,worldsize):
+			sBodys[x].append(null)
 
 
 func setBlock_and_add_to_array(gridX, gridY, gridZ):
@@ -37,17 +35,62 @@ func setBlock_and_add_to_array(gridX, gridY, gridZ):
 	blocks[gridX][gridZ] = gridY
 	
 func setBlock(gridX, gridY, gridZ):
-#	var block_instance = block.instance()
-#	var orig = Transform()
-#	orig.origin = Vector3(gridX*gridsize,gridY*gridsize,gridZ*gridsize)
-#	block_instance.transform = orig
-#	add_child(block_instance)
-	self.multimesh.set_instance_transform(instanceId, Transform(Basis(), Vector3(gridX*2, gridY*2, gridZ*2)))
+	var transform = Transform(Basis(), Vector3(gridX*gridsize, gridY*gridsize, gridZ*gridsize))
+	self.multimesh.set_instance_transform(instanceId, transform)
 	instanceId = instanceId + 1
 	
 
-
+func deactivateAllColliders():
+	for i in sBodys:
+		for j in i:
+			j.get_child(0).disabled = true
 		
+func activateColliders(fromX, toX, fromZ, toZ):
+	deactivateAllColliders()
+	for i in range(fromX, toX):
+		for j in range(fromZ, toZ):
+			if i < 0 or i > worldsize-1:
+				continue
+			if j < 0 or j > worldsize-1: 
+				continue
+			sBodys[i][j].get_child(0).disabled = false
+
+			
+func createStaticBodies(position:Vector3):
+	var posx = floor(position.x) / gridsize
+	var posz = floor(position.z) / gridsize
+	
+	var size = 20
+	for i in range(posx-size, posx+size):
+		for j in range(posz-size, posz+size):
+			if i > worldsize-1:
+				i = worldsize -1
+			if j > worldsize-1: 
+				j = worldsize -1
+			if sBodys[i][j] == null:
+				var transform = Transform(Basis(), Vector3(i*gridsize, blocks[i][j]*gridsize, j*gridsize))
+				var shape = CollisionShape.new()
+				shape.shape = BoxShape.new()
+				var sBody = StaticBody.new()
+				sBody.transform = transform
+				sBody.collision_layer = 2
+				sBody.collision_mask = 1
+				sBody.add_child(shape)
+				sBodys[i][j]= sBody
+				add_child(sBody)	
+	for i in range(worldsize):
+		for j in range(worldsize):
+			if i < posx-20 or i > posx +20:
+				if sBodys[i][j] != null:
+					remove_child(sBodys[i][j])
+					sBodys[i][j].queue_free()
+					sBodys[i][j] = null
+			if j < posz-20 or j > posz +20:
+				if sBodys[i][j] != null:
+					remove_child(sBodys[i][j])
+					sBodys[i][j].queue_free()	
+					sBodys[i][j] = null
+
 #Check if gridsize is further away than 2 (neighbors)
 func fillHoles():
 	for x in range(worldsize):
@@ -87,10 +130,11 @@ func generateWorld():
 	noise.seed = randi()
 	noise.period = 130.0
 	noise.persistence = 0.8
+
 	for x in range(worldsize):
 		for z in range(worldsize):
 			var y = noise.get_noise_2d(x,z)+1
-			y = floor(y*50)
+			y = floor(y*50)-50
 			setBlock_and_add_to_array(x,y,z)
 			
 			
