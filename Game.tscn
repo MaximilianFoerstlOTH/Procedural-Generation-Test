@@ -1,0 +1,26 @@
+[gd_scene load_steps=7 format=3 uid="uid://c8asyw5dlbayw"]
+
+[ext_resource type="PackedScene" uid="uid://bxq7uo6nfjccx" path="res://Assets/Player/Player.tscn" id="1_yaug3"]
+[ext_resource type="Script" path="res://Scripts/TerrainGeneration.gd" id="2_2u55a"]
+[ext_resource type="ArrayMesh" uid="uid://covwuo7l3v2d6" path="res://Assets/World/Grass.vox.obj" id="2_44jdo"]
+[ext_resource type="Texture2D" uid="uid://bitjrcyonmqbc" path="res://Assets/World/Grass.vox.png" id="2_lkpfk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tt3qu"]
+albedo_texture = ExtResource("2_lkpfk")
+
+[sub_resource type="MultiMesh" id="MultiMesh_rsbyj"]
+transform_format = 1
+use_colors = true
+mesh = ExtResource("2_44jdo")
+
+[node name="Game" type="Node3D"]
+
+[node name="Player" parent="." instance=ExtResource("1_yaug3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 200, 0.959)
+
+[node name="TerrainGeneration" type="MultiMeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -127.358, 80.87, -105.646)
+layers = 3
+material_overlay = SubResource("StandardMaterial3D_tt3qu")
+multimesh = SubResource("MultiMesh_rsbyj")
+script = ExtResource("2_2u55a")
