@@ -1,8 +1,7 @@
 extends CharacterBody3D
 
 var speed = 30
-var h_acceleration = 6
-var normal_acceleration = 6
+var h_acceleration = 1
 var gravity = 50
 var jump = 15
 var mouse_sensitivity = 0.1
@@ -42,8 +41,6 @@ func _process(_delta):
 func _physics_process(delta):
 	
 	move_direction = Vector3()
-	
-
 	if not is_on_floor():
 		gravity_direction += Vector3.DOWN * gravity * delta
 	else: 
@@ -58,7 +55,6 @@ func _physics_process(delta):
 		move_direction -= transform.basis.x
 	elif Input.is_action_pressed("move_right"):
 		move_direction += transform.basis.x
-		
 		
 	move_direction = move_direction.normalized()
 	move_direction.y = gravity_direction.y
