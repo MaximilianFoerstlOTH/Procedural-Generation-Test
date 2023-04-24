@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Procedural Generation Test"
-run/main_scene="res://Scene.tscn"
+run/main_scene="res://Assets/World/Block.tscn"
 config/features=PackedStringArray("4.0")
 config/icon="res://icon.png"
 
